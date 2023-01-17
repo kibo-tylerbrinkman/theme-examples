@@ -9,6 +9,7 @@
 </h3>
 
 <div class="mz-formstep-body">
+<div id='click-for-error'>CLICKMEEEEEE FOR ERROR</div>
   <div class="mz-formstep-summary mz-l-stack">
         {% if model.nonStoreCreditOrGiftCardTotal == 0%}
             <h4 class="mz-checkout-nopaymentrequired">{{ labels.noPaymentRequired|string_format(model.remainingTotal|currency) }}</h4>

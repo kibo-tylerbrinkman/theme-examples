@@ -365,9 +365,12 @@
                 };
                 me.helpers.push('hasMessages');
                 me.on('error', function(err) {
+                    console.log('ERROR LOG IN MOZU MODEL');
+                    console.log(err);
                     if (err.items && err.items.length) {
                         me.messages.reset(err.items);
                     } else {
+                        //err+= 'https://www.google.com'
                         me.messages.reset([err]);
                     }
                 });

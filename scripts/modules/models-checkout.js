@@ -431,6 +431,14 @@
                 check: PaymentMethods.Check,
                 purchaseOrder: PaymentMethods.PurchaseOrder
             },
+            additionalEvents: {
+                "click [click-for-error]": 'clickForError'
+            },
+            clickForError: function(){
+                this.trigger('error', {
+                    message: 'Error'
+                });
+            },
             validatePaymentType: function(value, attr) {
                 var order = this.getOrder();
                 var payment = order.apiModel.getCurrentPayment();
