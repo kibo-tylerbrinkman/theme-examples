@@ -411,6 +411,7 @@ define(["modules/jquery-mozu", "underscore", "modules/backbone-mozu", "hyprlive"
             this.updateConfiguration();
         },
         updateQuantity: function (newQty) {
+            console.log('updating quanityt');
             var me = this;
             if (this.get('quantity') === newQty) return;
             this.set('quantity', newQty);

@@ -2,6 +2,7 @@
     <h3 class="mz-formstep-header mz-checkoutform-header">
         {{ labels.orderSummary }}
         <a href="{{siteContext.siteSubdirectory}}/cart" class="mz-formstep-edit" data-mz-action="editCart">{{ labels.change }}</a>
+        <p data-mz-action="increment">increment</p>
     </h3>
 
     <div class="mz-formstep-body">

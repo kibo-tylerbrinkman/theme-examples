@@ -9,8 +9,10 @@ require(["modules/jquery-mozu",
     'modules/preserve-element-through-render',
     'modules/xpress-paypal',
     'modules/amazonpay',
-    'modules/applepay'],
-    function ($, _, Hypr, Backbone, CheckoutModels, messageViewFactory, CartMonitor, HyprLiveContext, EditableView, preserveElements, PayPal, AmazonPay, ApplePay) {
+    'modules/applepay',
+    'modules/api'
+    ],
+    function ($, _, Hypr, Backbone, CheckoutModels, messageViewFactory, CartMonitor, HyprLiveContext, EditableView, preserveElements, PayPal, AmazonPay, ApplePay, api) {
 
 
     var ThresholdMessageView = Backbone.MozuView.extend({
@@ -86,7 +88,32 @@ require(["modules/jquery-mozu",
             this.listenTo(this.model.get('billingInfo'), 'orderPayment', this.onOrderCreditChanged, this);
         },
 
+        increment: function(){
+            console.log('incrementing');
+            var me = this;
+            //need orderid, orderitemid
+            ///commerce/carts/current/items/{cartItemId}/{quantity}
+            console.log(this.model.get('id'));
+            var order = this.model.get('items')[0];
+            var orderId = this.model.get('id');
+            var orderItemId = order.id;
+
+            var cartItemId = this.model.get('items')[0].originalCartItemId;
+            console.log(cartItemId);
+            var baseUrl = window.location.origin;
+            var path = baseUrl + '/api/commerce/orders/' +orderId+ '/items/'+orderItemId+'/quantity/11';
+            console.log(path);
+
+
+            api.request("PUT", path).then(function(res) {
+                console.log(res);
+                console.log('updated quantity');
+                me.render();
+            });
+        },
+
         editCart: function () {
+
             var siteSubdirectory = (HyprLiveContext.locals.siteContext.siteSubdirectory || '');
             var quoteId = this.model.get('originalQuoteId');
             if (quoteId) {

@@ -87,12 +87,14 @@ define(['modules/api',
             // this.messageView.render();
         },
         updateQuantity: _.debounce(function (e) {
+          console.log('updating quantity in cart table');
             var $qField = $(e.currentTarget),
                 newQuantity = parseInt($qField.val(), 10),
                 id = $qField.data('mz-cart-item'),
                 item = this.model.get("items").get(id);
-
+          
             if (item && !isNaN(newQuantity)) {
+              console.log('shoudl be here');
                 item.set('quantity', newQuantity);
                 item.saveQuantity();
             }

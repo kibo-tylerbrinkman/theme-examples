@@ -46,6 +46,7 @@ define(['underscore', 'modules/backbone-mozu', 'hyprlive', "modules/api", "modul
             return price.baseAmount != price.discountedAmount;
         },
         saveQuantity: function() {
+            console.log('saving quantity');
             var self = this;
             var oldQuantity = this.previous("quantity");
             if (this.hasChanged("quantity")) {

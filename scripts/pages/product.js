@@ -20,6 +20,7 @@
             return this.configure($(e.currentTarget));
         },
         onQuantityChange: _.debounce(function (e) {
+            console.log('on quantity change running');
             var $qField = $(e.currentTarget),
                 newQuantity = parseInt($qField.val(), 10);
             if (!isNaN(newQuantity)) {
