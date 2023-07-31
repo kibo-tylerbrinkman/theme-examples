@@ -682,6 +682,8 @@ require(["modules/jquery-mozu",
         AmazonPay.init(true);
 
         checkoutData.isAmazonPayEnable = AmazonPay.isEnabled;
+
+        //DIGITAL FULFILLMENT
         checkoutData.requiresFulfillmentInfo = false;
         checkoutData.requiresShippingMethod = false;
 

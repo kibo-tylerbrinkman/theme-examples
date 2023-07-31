@@ -161,7 +161,8 @@
                 }
             },
             toJSON: function () {
-                console.log('calculating stuff here');
+                //DIGITAL FULFILLMENT
+                //Add boolean for if digital fulfillment item here and uncomment if clause
                 // if (this.requiresFulfillmentInfo() || this.requiresDigitalFulfillmentContact()) {
                     return CheckoutStep.prototype.toJSON.apply(this, arguments);
                 //}
@@ -1442,46 +1443,14 @@
                 return !_.isEqual(normalizedSavedPaymentInfo, normalizedLiveBillingInfo);
             },
             submit: function(){
-                console.log('trying');
                 var self = this;
-
-                var checkout = this.getOrder();
-
-                var fulfillmentInfo = {
-                    "fulfillmentContact": {
-                        "address": {
-                            "candidateValidatedAddresses": null,
-                            "countryCode": "US",
-                            "addressType": "Residential",
-                            "address1": "1817 W Braker Ln",
-                            "cityOrTown": "Austin",
-                            "stateOrProvince": "TX",
-                            "postalOrZipCode": "78758",
-                            "isValidated": false
-                        },
-                        "firstName": "Bob",
-                        "lastNameOrSurname": "Kibo",
-                        "phoneNumbers": {
-                            "home": "+11231231234"
-                        }
-                    },
-                    "shippingZoneCode": "Americas",
-                    "isValid": true,
-                    "messages": [],
-                    "currencyCode": "USD",
-                    "price": 0,
-                    "shippingMethodCode": "digital-shipping",
-                    "shippingMethodName": "Digital Shiping"
-                };
-                
-
-
-                checkout.apiModel.update({fulfillmentInfo: fulfillmentInfo }).then(function(res){
+                //DIGITAL FULFILLMENT
+                self.setDigitalItemFulfillmentInfo().then(function(){
                     var order = self.getOrder();
 
-                    var fulfillmentInfo = res.data.fulfillmentInfo;
+                    // var fulfillmentInfo = res.data.fulfillmentInfo;
 
-                    order.set('fulfillmentInfo', fulfillmentInfo);
+                    // order.set('fulfillmentInfo', fulfillmentInfo);
                     // just can't sync these emails right
                     order.ensureEmailIsSet();
     
@@ -1529,6 +1498,40 @@
                         self.markComplete();
                     } 
                 });
+                
+            },
+            setDigitalItemFulfillmentInfo: function() {
+                //DIGITAL FULFILLMENT
+                var checkout = this.getOrder();
+
+                var fulfillmentInfo = {
+                    "fulfillmentContact": {
+                        "address": {
+                            "candidateValidatedAddresses": null,
+                            "countryCode": "US",
+                            "addressType": "Residential",
+                            "address1": "1817 W Braker Ln",
+                            "cityOrTown": "Austin",
+                            "stateOrProvince": "TX",
+                            "postalOrZipCode": "78758",
+                            "isValidated": false
+                        },
+                        "firstName": "Bob",
+                        "lastNameOrSurname": "Kibo",
+                        "phoneNumbers": {
+                            "home": "+11231231234"
+                        }
+                    },
+                    "shippingZoneCode": "Americas",
+                    "isValid": true,
+                    "messages": [],
+                    "currencyCode": "USD",
+                    "price": 0,
+                    "shippingMethodCode": "digital-shipping",
+                    "shippingMethodName": "Digital Shiping"
+                };
+
+                return checkout.apiModel.update({fulfillmentInfo: fulfillmentInfo});
             },
             applyPayment: function () {
                 var self = this, order = this.getOrder();
