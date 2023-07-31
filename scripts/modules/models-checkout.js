@@ -161,7 +161,7 @@
                 }
             },
             toJSON: function () {
-                //DIGITAL FULFILLMENT
+                //DIGITAL ITEM FULFILLMENT
                 //Add boolean for if digital fulfillment item here and uncomment if clause
                 // if (this.requiresFulfillmentInfo() || this.requiresDigitalFulfillmentContact()) {
                     return CheckoutStep.prototype.toJSON.apply(this, arguments);
@@ -1444,7 +1444,7 @@
             },
             submit: function(){
                 var self = this;
-                //DIGITAL FULFILLMENT
+                //DIGITAL ITEM FULFILLMENT
                 self.setDigitalItemFulfillmentInfo().then(function(){
                     var order = self.getOrder();
 
@@ -1501,7 +1501,7 @@
                 
             },
             setDigitalItemFulfillmentInfo: function() {
-                //DIGITAL FULFILLMENT
+                //DIGITAL ITEM FULFILLMENT
                 var checkout = this.getOrder();
 
                 var fulfillmentInfo = {

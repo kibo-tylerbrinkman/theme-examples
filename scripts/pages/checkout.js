@@ -683,7 +683,7 @@ require(["modules/jquery-mozu",
 
         checkoutData.isAmazonPayEnable = AmazonPay.isEnabled;
 
-        //DIGITAL FULFILLMENT
+        //DIGITAL ITEM FULFILLMENT
         checkoutData.requiresFulfillmentInfo = false;
         checkoutData.requiresShippingMethod = false;
 
