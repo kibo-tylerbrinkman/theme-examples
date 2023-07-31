@@ -1504,6 +1504,8 @@
                 //DIGITAL ITEM FULFILLMENT
                 var checkout = this.getOrder();
 
+                //Can grab info from checkout.get('billingInfo.billingContact') to create payload
+
                 var fulfillmentInfo = {
                     "fulfillmentContact": {
                         "address": {
