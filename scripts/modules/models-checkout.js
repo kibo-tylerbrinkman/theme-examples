@@ -161,9 +161,10 @@
                 }
             },
             toJSON: function () {
-                if (this.requiresFulfillmentInfo() || this.requiresDigitalFulfillmentContact()) {
+                console.log('calculating stuff here');
+                // if (this.requiresFulfillmentInfo() || this.requiresDigitalFulfillmentContact()) {
                     return CheckoutStep.prototype.toJSON.apply(this, arguments);
-                }
+                //}
             },
             isDigitalValid: function() {
                 var email = this.get('email');
@@ -1440,55 +1441,94 @@
 
                 return !_.isEqual(normalizedSavedPaymentInfo, normalizedLiveBillingInfo);
             },
-            submit: function () {
+            submit: function(){
+                console.log('trying');
+                var self = this;
 
-                var order = this.getOrder();
-                // just can't sync these emails right
-                order.ensureEmailIsSet();
+                var checkout = this.getOrder();
 
-                // This needs to be ahead of validation so we can check if visa checkout is being used.
-                var currentPayment = order.apiModel.getCurrentPayment();
-
-                // the card needs to know if this is a saved card or not.
-                this.get('card').set('isSavedCard', order.get('billingInfo.usingSavedCard'));
-                // the card needs to know if this is Visa checkout (or Amazon? TBD)
-                if (currentPayment) {
-                    this.get('card').set('isVisaCheckout', currentPayment.paymentWorkflow.toLowerCase() === 'visacheckout');
-                }
-
-                var val = this.validate();
-
-                if (this.nonStoreCreditOrGiftCardTotal() > 0 && val) {
-                    // display errors:
-                    var error = {"items":[]};
-                    for (var key in val) {
-                        if (val.hasOwnProperty(key)) {
-                            var errorItem = {};
-                            errorItem.name = key;
-                            errorItem.message = key.substring(0, ".") + val[key];
-                            error.items.push(errorItem);
+                var fulfillmentInfo = {
+                    "fulfillmentContact": {
+                        "address": {
+                            "candidateValidatedAddresses": null,
+                            "countryCode": "US",
+                            "addressType": "Residential",
+                            "address1": "1817 W Braker Ln",
+                            "cityOrTown": "Austin",
+                            "stateOrProvince": "TX",
+                            "postalOrZipCode": "78758",
+                            "isValidated": false
+                        },
+                        "firstName": "Bob",
+                        "lastNameOrSurname": "Kibo",
+                        "phoneNumbers": {
+                            "home": "+11231231234"
                         }
-                    }
-                    if (error.items.length > 0) {
-                        order.onCheckoutError(error);
-                    }
-                    return false;
-                }
+                    },
+                    "shippingZoneCode": "Americas",
+                    "isValid": true,
+                    "messages": [],
+                    "currencyCode": "USD",
+                    "price": 0,
+                    "shippingMethodCode": "digital-shipping",
+                    "shippingMethodName": "Digital Shiping"
+                };
+                
 
-                var card = this.get('card');
-                if(this.get('paymentType').toLowerCase() === "purchaseorder") {
-                    this.get('purchaseOrder').inflateCustomFields();
-                }
 
-                if (!currentPayment) {
-                    return this.applyPayment();
-                } else if (this.hasPaymentChanged(currentPayment)) {
-                    return order.apiVoidPayment(currentPayment.id).then(this.applyPayment);
-                } else if (card.get('cvv') && card.get('paymentServiceCardId')) {
-                    return card.apiSave().then(this.markComplete, order.onCheckoutError);
-                } else {
-                    this.markComplete();
-                }
+                checkout.apiModel.update({fulfillmentInfo: fulfillmentInfo }).then(function(res){
+                    var order = self.getOrder();
+
+                    var fulfillmentInfo = res.data.fulfillmentInfo;
+
+                    order.set('fulfillmentInfo', fulfillmentInfo);
+                    // just can't sync these emails right
+                    order.ensureEmailIsSet();
+    
+                    // self needs to be ahead of validation so we can check if visa checkout is being used.
+                    var currentPayment = order.apiModel.getCurrentPayment();
+    
+                    // the card needs to know if self is a saved card or not.
+                    self.get('card').set('isSavedCard', order.get('billingInfo.usingSavedCard'));
+                    // the card needs to know if self is Visa checkout (or Amazon? TBD)
+                    if (currentPayment) {
+                        self.get('card').set('isVisaCheckout', currentPayment.paymentWorkflow.toLowerCase() === 'visacheckout');
+                    }
+    
+                    var val = self.validate();
+    
+                    if (self.nonStoreCreditOrGiftCardTotal() > 0 && val) {
+                        // display errors:
+                        var error = {"items":[]};
+                        for (var key in val) {
+                            if (val.hasOwnProperty(key)) {
+                                var errorItem = {};
+                                errorItem.name = key;
+                                errorItem.message = key.substring(0, ".") + val[key];
+                                error.items.push(errorItem);
+                            }
+                        }
+                        if (error.items.length > 0) {
+                            order.onCheckoutError(error);
+                        }
+                        return false;
+                    }
+    
+                    var card = self.get('card');
+                    if(self.get('paymentType').toLowerCase() === "purchaseorder") {
+                        self.get('purchaseOrder').inflateCustomFields();
+                    }
+    
+                    if (!currentPayment) {
+                        return self.applyPayment();
+                    } else if (self.hasPaymentChanged(currentPayment)) {
+                        return order.apiVoidPayment(currentPayment.id).then(self.applyPayment);
+                    } else if (card.get('cvv') && card.get('paymentServiceCardId')) {
+                        return card.apiSave().then(self.markComplete, order.onCheckoutError);
+                    } else {
+                        self.markComplete();
+                    } 
+                });
             },
             applyPayment: function () {
                 var self = this, order = this.getOrder();
@@ -2096,7 +2136,7 @@
                             ipAddress: order.get('ipAddress'),
                             shopperNotes: order.get('shopperNotes').toJSON()
                         });
-                    }];
+                    }];     
 
                 var activePayments = this.apiModel.getActivePayments();
 
@@ -2186,9 +2226,13 @@
                     }
                 }
 
-                process.push(/*this.finalPaymentReconcile, */this.apiCheckout);
+              
+                    
+                    process.push(/*this.finalPaymentReconcile, */order.apiCheckout);
+    
+                    api.steps(process).then(order.onCheckoutSuccess, order.onCheckoutError);
+              
 
-                api.steps(process).then(this.onCheckoutSuccess, this.onCheckoutError);
 
             },
             update: function() {

@@ -682,7 +682,10 @@ require(["modules/jquery-mozu",
         AmazonPay.init(true);
 
         checkoutData.isAmazonPayEnable = AmazonPay.isEnabled;
+        checkoutData.requiresFulfillmentInfo = false;
+        checkoutData.requiresShippingMethod = false;
 
+ 
         var checkoutModel = window.order = new CheckoutModels.CheckoutPage(checkoutData),
             checkoutViews = {
                 parentView: new ParentView({
